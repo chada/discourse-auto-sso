@@ -1,0 +1,7 @@
+plugins:
+  auto_sso_enabled:
+    default: true
+    client: true
+  auto_sso_verify_session_url:
+    default: "http://localhost:3002/api/sso/verify-session"
+    client: true

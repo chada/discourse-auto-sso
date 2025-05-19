@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    auto_sso_enabled: "Enable auto SSO. This feature will automatically log in users who have a valid session."
+    auto_sso_verify_session_url: "The URL to verify the session."

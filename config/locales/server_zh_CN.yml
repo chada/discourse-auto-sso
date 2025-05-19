@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    auto_sso_enabled: "启用自动 SSO。此功能将自动登录拥有有效会话的用户。"
+    auto_sso_verify_session_url: "验证会话的 URL。"
