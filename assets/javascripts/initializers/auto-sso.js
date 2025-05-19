@@ -1,4 +1,5 @@
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {
@@ -13,13 +14,10 @@ export default {
       }
 
       api.onPageChange((context) => {
-        // eslint-disable-next-line no-console
-        console.log("onPageChange", context);
-
-        if (!api.getCurrentUser()) {
-          // eslint-disable-next-line no-console
-          console.log("user not logged in");
-
+        if (
+          !api.getCurrentUser() &&
+          !context.currentRouteName.includes("login")
+        ) {
           checkExternalAuth();
         }
       });
@@ -31,23 +29,36 @@ export default {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          withCredentials: true,
           xhrFields: {
             withCredentials: true,
           },
         })
           .then((result) => {
-            // eslint-disable-next-line no-console
-            console.log("checkExternalAuth result", result);
-
             if (result.authenticated) {
-              api.login(result.user);
+              // 让用户自动登录
+              const user = result.user;
+              const ssoUrl = "/session/sso";
+              const payload = {
+                email: user.email,
+                name: user.name,
+                username: user.email.split("@")[0], // 使用邮箱前缀作为用户名
+                external_id: user.id,
+                avatar_url: user.image,
+                require_activation: false,
+              };
+
+              // 构建 SSO 登录 URL
+              const queryString = Object.keys(payload)
+                .map(
+                  (key) =>
+                    `${encodeURIComponent(key)}=${encodeURIComponent(payload[key])}`
+                )
+                .join("&");
+
+              window.location.href = `${ssoUrl}?${queryString}`;
             }
           })
-          .catch((error) => {
-            // eslint-disable-next-line no-console
-            console.error("checkExternalAuth error", error);
-          });
+          .catch(popupAjaxError);
       }
     });
   },
