@@ -13,11 +13,11 @@ export default {
         return;
       }
 
-      api.onPageChange((context) => {
-        if (
-          !api.getCurrentUser() &&
-          !context.currentRouteName.includes("login")
-        ) {
+      // Todo: Listen to the logout event and log out the user from the external auth service
+
+      // on page change, check if the user is logged in
+      api.onPageChange(() => {
+        if (!api.getCurrentUser()) {
           checkExternalAuth();
         }
       });
