@@ -1,5 +1,4 @@
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 export default {
@@ -63,6 +62,7 @@ export default {
               window.location.href = `${ssoUrl}?${queryString}`;
             }
           })
+          // should not popup error as it should be quiet
           // .catch((error) => {
           //   appEvents.trigger("auto-sso:error", error);
           //   popupAjaxError(error);
