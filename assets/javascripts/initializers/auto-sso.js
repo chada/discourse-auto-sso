@@ -8,6 +8,7 @@ export default {
     withPluginApi("0.1", (api) => {
       const siteSettings = container.lookup("service:site-settings");
       const autoSsoEnabled = siteSettings.auto_sso_enabled;
+      const appEvents = container.lookup("service:app-events");
 
       if (!autoSsoEnabled) {
         return;
@@ -23,12 +24,16 @@ export default {
       });
 
       function checkExternalAuth() {
-        ajax("http://localhost:3002/api/sso/verify-session", {
+        // 显示加载状态
+        appEvents.trigger("auto-sso:checking");
+
+        ajax(siteSettings.auto_sso_verify_session_url, {
           method: "GET",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          withCredentials: true,
           xhrFields: {
             withCredentials: true,
           },
@@ -58,7 +63,13 @@ export default {
               window.location.href = `${ssoUrl}?${queryString}`;
             }
           })
-          .catch(popupAjaxError);
+          // .catch((error) => {
+          //   appEvents.trigger("auto-sso:error", error);
+          //   popupAjaxError(error);
+          // })
+          .finally(() => {
+            appEvents.trigger("auto-sso:checked");
+          });
       }
     });
   },
